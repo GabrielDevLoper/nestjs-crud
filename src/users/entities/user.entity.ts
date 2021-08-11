@@ -3,10 +3,13 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  JoinColumn,
+  ManyToOne,
   PrimaryGeneratedColumn,
-  UpdateDateColumn
+  UpdateDateColumn,
 } from 'typeorm';
 import * as bcrypt from 'bcrypt';
+import { Profile } from 'src/profiles/entities/profile.entity';
 
 @Entity('users')
 export class User {
@@ -19,13 +22,13 @@ export class User {
   @Column({ unique: true })
   cpf: string;
 
-  @Column()
+  @Column({ select: false })
   id_profile: number;
 
   @Column()
   is_active: boolean;
 
-  @Column()
+  @Column({ select: false })
   password: string;
 
   @CreateDateColumn()
@@ -34,10 +37,12 @@ export class User {
   @UpdateDateColumn()
   updated_at: Date;
 
+  @ManyToOne(() => Profile, (profile) => profile.users)
+  @JoinColumn({ name: 'id_profile', referencedColumnName: 'id' })
+  profile: Profile;
+
   @BeforeInsert()
-  async passwordHash(){
+  async passwordHash() {
     this.password = await bcrypt.hash(this.password, 12);
   }
-
-
 }
