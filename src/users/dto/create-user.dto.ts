@@ -1,18 +1,23 @@
-import { IsBoolean, IsNumber, IsString } from 'class-validator';
+import { IsBoolean, IsNotEmpty, IsNumber, IsString } from "class-validator";
 
 export class CreateUserDto {
-  @IsString()
+  @IsString({message: 'O campo nome deve ser string'})
+  @IsNotEmpty({message: 'O campo nome é obrigatório'})
   readonly name: string;
 
-  @IsString()
+  @IsString({message: 'O campo cpf deve ser string'})
+  @IsNotEmpty({message: 'O campo cpf é obrigatório'})
   readonly cpf: string;
 
   @IsNumber()
-  readonly id_perfil: number;
+  @IsNotEmpty({message: 'O campo id_profile é obrigatório'})
+  readonly id_profile: number;
 
-  @IsBoolean()
-  readonly isActive: boolean;
+  @IsBoolean({message: 'O campo is_active deve ser boolean'})
+  @IsNotEmpty({message: 'O campo is_active é obrigatório'})
+  readonly is_active: boolean;
 
-  @IsString()
+  @IsString({message: 'O campo password deve ser string'})
+  @IsNotEmpty({message: 'O campo password é obrigatório'})
   readonly password: string;
 }

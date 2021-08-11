@@ -1,15 +1,34 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from "@nestjs/common";
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { InjectRepository } from '@nestjs/typeorm';
+import { User } from './entities/user.entity';
+import { Repository } from 'typeorm';
 
 @Injectable()
 export class UsersService {
-  create(createUserDto: CreateUserDto) {
-    return 'This action adds a new user';
+  constructor(@InjectRepository(User) private readonly userRepository: Repository<User>) {
+  }
+
+  async create(createUserDto: CreateUserDto) {
+    const user = this.userRepository.create(createUserDto);
+
+    const userAlreadyExists = await this.userRepository.findOne(user.id);
+
+    if(userAlreadyExists){
+      throw new HttpException('Já existe um usuario cadastrado com este CPF', HttpStatus.BAD_REQUEST);
+    }
+
+    await this.userRepository.save(user);
+
+    delete user.password;
+
+    return user;
   }
 
   async findAll() {
-    return 'Sport Recife';
+    const users = await this.userRepository.find();
+    return users;
   }
 
   findOne(id: number) {
