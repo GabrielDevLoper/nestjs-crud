@@ -59,9 +59,16 @@ export class ProductsService {
       throw new HttpException('Este produto não existe', HttpStatus.NOT_FOUND);
     }
 
-    await this.productRepository.update(id, updateProductDto);
+    try {
+      await this.productRepository.update(id, updateProductDto);
 
-    return product;
+      return product;
+    } catch (error) {
+      throw new HttpException(
+        'Já existe um produto cadastrado com o mesmo código identificador',
+        HttpStatus.CONFLICT,
+      );
+    }
   }
 
   async remove(id: number) {

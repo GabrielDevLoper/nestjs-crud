@@ -4,6 +4,7 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './entities/user.entity';
 import { Repository } from 'typeorm';
+import { NotFoundException } from '@nestjs/common';
 
 @Injectable()
 export class UsersService {
@@ -56,18 +57,32 @@ export class UsersService {
     return user;
   }
 
-  async update(id: number, updateUserDto: UpdateUserDto) {
-    const userAlreadyExist = await this.userRepository.findOne(id);
+  async findByCpf(cpf: string) {
+    const user = await this.userRepository.findOne({ cpf: cpf });
 
-    if (!userAlreadyExist) {
-      throw new HttpException(`Usuário não encontrado`, HttpStatus.NOT_FOUND);
+    if (!user) {
+      throw new NotFoundException('Usuário não foi encontrado');
     }
 
-    const user = this.userRepository.create(updateUserDto);
-
-    await this.userRepository.update(id, user);
-
     return user;
+  }
+
+  async update(id: number, updateUserDto: UpdateUserDto) {
+    const user = await this.userRepository.findOne(id);
+
+    if (!user) {
+      throw new HttpException(`Usuário não encontrado`, HttpStatus.NOT_FOUND);
+    }
+    try {
+      await this.userRepository.update(id, updateUserDto);
+
+      return user;
+    } catch (error) {
+      throw new HttpException(
+        'Já existe um usuário cadastrado com o mesmo cpf',
+        HttpStatus.CONFLICT,
+      );
+    }
   }
 
   async remove(id: number) {
