@@ -2,7 +2,7 @@ import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Category } from 'src/categories/entities/category.entity';
 import { User } from 'src/users/entities/user.entity';
-import { Repository } from 'typeorm';
+import { Not, Repository } from 'typeorm';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { Product } from './entities/product.entity';
@@ -83,16 +83,45 @@ export class ProductsService {
       throw new HttpException('Este produto não existe', HttpStatus.NOT_FOUND);
     }
 
-    try {
-      await this.productRepository.update(id, updateProductDto);
+    const productAlreadyUsingCode = await this.productRepository.findOne({
+      where: {
+        code: updateProductDto.code,
+        id: Not(product.id),
+      },
+    });
 
-      return product;
-    } catch (error) {
+    if (productAlreadyUsingCode) {
       throw new HttpException(
         'Já existe um produto cadastrado com o mesmo código identificador',
         HttpStatus.CONFLICT,
       );
     }
+
+    const user = await this.userRepository.findOne(updateProductDto.id_user);
+
+    if (!user) {
+      throw new HttpException(
+        'Usuário não foi encontrado',
+        HttpStatus.NOT_FOUND,
+      );
+    }
+
+    const category = await this.categoryRepository.findOne(
+      updateProductDto.id_category,
+    );
+
+    if (!category) {
+      throw new HttpException(
+        'Categoria não foi encontrada',
+        HttpStatus.NOT_FOUND,
+      );
+    }
+
+    await this.productRepository.update(id, updateProductDto);
+
+    const productUpdated = await this.productRepository.findOne(id);
+
+    return productUpdated;
   }
 
   async remove(id: number) {

@@ -1,7 +1,9 @@
 import { Category } from 'src/categories/entities/category.entity';
 import { User } from 'src/users/entities/user.entity';
 import {
+  AfterUpdate,
   BeforeInsert,
+  BeforeUpdate,
   Column,
   CreateDateColumn,
   Entity,
@@ -49,9 +51,4 @@ export class Product {
   @ManyToOne(() => Category, (category) => category.products)
   @JoinColumn({ name: 'id_category', referencedColumnName: 'id' })
   category: Category;
-
-  @BeforeInsert()
-  codeToUpperCase() {
-    this.code = this.code.toUpperCase();
-  }
 }
