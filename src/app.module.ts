@@ -4,12 +4,10 @@ import { ProductsModule } from './products/products.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ProfilesModule } from './profiles/profiles.module';
 import { ConfigModule } from '@nestjs/config';
+import { CategoriesModule } from './categories/categories.module';
 
 @Module({
   imports: [
-    UsersModule,
-    ProductsModule,
-    ProfilesModule,
     ConfigModule.forRoot(),
     TypeOrmModule.forRoot({
       type: 'mysql',
@@ -21,6 +19,10 @@ import { ConfigModule } from '@nestjs/config';
       autoLoadEntities: true,
       synchronize: true,
     }),
+    UsersModule,
+    ProductsModule,
+    ProfilesModule,
+    CategoriesModule,
   ],
 })
 export class AppModule {}

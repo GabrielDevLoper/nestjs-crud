@@ -2,26 +2,25 @@ import { IsNotEmpty, IsNumber, IsString } from 'class-validator';
 
 export class CreateProductDto {
   @IsString()
-  @IsNotEmpty()
+  @IsNotEmpty({ message: 'O campo código é obrigatório' })
   readonly description: string;
 
   @IsString()
-  @IsNotEmpty()
+  @IsNotEmpty({ message: 'O campo código é obrigatório' })
   readonly code: string;
 
   @IsNumber()
-  @IsNotEmpty()
+  @IsNotEmpty({ message: 'É obrigatório escolher uma categoria' })
   readonly id_category: number;
 
   @IsNumber()
-  @IsNotEmpty()
   readonly id_user: number;
 
   @IsNumber()
-  @IsNotEmpty()
+  @IsNotEmpty({ message: 'O campo quantidade é obrigatório' })
   readonly amount: number;
 
   @IsNumber()
-  @IsNotEmpty()
+  @IsNotEmpty({ message: 'O campo preço é obrigatório' })
   readonly price: number;
 }

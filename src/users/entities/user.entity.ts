@@ -39,11 +39,15 @@ export class User {
   @UpdateDateColumn()
   updated_at: Date;
 
-  @ManyToOne(() => Profile, (profile) => profile.users)
+  @ManyToOne(() => Profile, (profile) => profile.users, {
+    onDelete: 'CASCADE',
+  })
   @JoinColumn({ name: 'id_profile', referencedColumnName: 'id' })
   profile: Profile;
 
-  @OneToMany(() => Product, (product) => product.user)
+  @OneToMany(() => Product, (product) => product.user, {
+    onDelete: 'CASCADE',
+  })
   products: Product[];
 
   @BeforeInsert()

@@ -1,6 +1,7 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Http2ServerResponse } from 'http2';
+import { Category } from 'src/categories/entities/category.entity';
+import { User } from 'src/users/entities/user.entity';
 import { Repository } from 'typeorm';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
@@ -11,6 +12,9 @@ export class ProductsService {
   constructor(
     @InjectRepository(Product)
     private readonly productRepository: Repository<Product>,
+    @InjectRepository(User) private readonly userRepository: Repository<User>,
+    @InjectRepository(Category)
+    private readonly categoryRepository: Repository<Category>,
   ) {}
 
   async create(createProductDto: CreateProductDto) {
@@ -29,6 +33,26 @@ export class ProductsService {
       );
     }
 
+    const user = await this.userRepository.findOne(createProductDto.id_user);
+
+    if (!user) {
+      throw new HttpException(
+        'Usuário não foi encontrado',
+        HttpStatus.NOT_FOUND,
+      );
+    }
+
+    const category = await this.categoryRepository.findOne(
+      createProductDto.id_category,
+    );
+
+    if (!category) {
+      throw new HttpException(
+        'Categoria não foi encontrada',
+        HttpStatus.NOT_FOUND,
+      );
+    }
+
     await this.productRepository.save(product);
 
     return product;
@@ -36,7 +60,7 @@ export class ProductsService {
 
   async findAll() {
     const products = await this.productRepository.find({
-      relations: ['user'],
+      relations: ['user', 'category'],
     });
 
     return products;
@@ -53,7 +77,7 @@ export class ProductsService {
   }
 
   async update(id: number, updateProductDto: UpdateProductDto) {
-    const product = await this.productRepository.findOneOrFail(id);
+    const product = await this.productRepository.findOne(id);
 
     if (!product) {
       throw new HttpException('Este produto não existe', HttpStatus.NOT_FOUND);
@@ -80,6 +104,6 @@ export class ProductsService {
 
     await this.productRepository.remove(product);
 
-    return Http2ServerResponse;
+    return;
   }
 }

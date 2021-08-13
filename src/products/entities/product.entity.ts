@@ -1,3 +1,4 @@
+import { Category } from 'src/categories/entities/category.entity';
 import { User } from 'src/users/entities/user.entity';
 import {
   BeforeInsert,
@@ -21,7 +22,7 @@ export class Product {
   @Column({ unique: true })
   code: string;
 
-  @Column()
+  @Column({ nullable: true })
   id_category: number;
 
   @Column()
@@ -39,9 +40,15 @@ export class Product {
   @UpdateDateColumn()
   updated_at: Date;
 
-  @ManyToOne(() => User, (user) => user.products)
+  @ManyToOne(() => User, (user) => user.products, {
+    onDelete: 'CASCADE',
+  })
   @JoinColumn({ name: 'id_user', referencedColumnName: 'id' })
   user: User;
+
+  @ManyToOne(() => Category, (category) => category.products)
+  @JoinColumn({ name: 'id_category', referencedColumnName: 'id' })
+  category: Category;
 
   @BeforeInsert()
   codeToUpperCase() {
