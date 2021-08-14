@@ -68,12 +68,14 @@ export class UsersService {
   }
 
   async update(id: number, updateUserDto: UpdateUserDto) {
-    const user = await this.userRepository.findOne(id);
+    const user = await this.userRepository.preload({
+      id,
+      ...updateUserDto,
+    });
 
     if (!user) {
       throw new HttpException(`Usuário não encontrado`, HttpStatus.NOT_FOUND);
     }
-
     // Verificando se já existe um usuário com o mesmo cpf,
     // porém eliminando a validação com o seu proprio cpf
     const userAlreadyUsingCpf = await this.userRepository.findOne({
@@ -90,11 +92,7 @@ export class UsersService {
       );
     }
 
-    await this.userRepository.update(id, updateUserDto);
-
-    const userUpdated = await this.userRepository.findOne(id);
-
-    return userUpdated;
+    return await this.userRepository.save(user);
   }
 
   async remove(id: number) {
