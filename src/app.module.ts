@@ -5,6 +5,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { ProfilesModule } from './profiles/profiles.module';
 import { ConfigModule } from '@nestjs/config';
 import { CategoriesModule } from './categories/categories.module';
+import { AuthModule } from './auth/auth.module';
 import * as ormconfig from './ormconfig';
 
 @Module({
@@ -15,6 +16,7 @@ import * as ormconfig from './ormconfig';
     ProductsModule,
     ProfilesModule,
     CategoriesModule,
+    AuthModule,
   ],
 })
 export class AppModule {}

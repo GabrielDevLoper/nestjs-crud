@@ -30,7 +30,7 @@ export class User {
   @Column()
   is_active: boolean;
 
-  @Column({ select: false })
+  @Column()
   password: string;
 
   @CreateDateColumn()

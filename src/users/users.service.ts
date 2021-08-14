@@ -58,7 +58,7 @@ export class UsersService {
   }
 
   async findByCpf(cpf: string) {
-    const user = await this.userRepository.findOne({ cpf: cpf });
+    const user = await this.userRepository.findOne({ cpf });
 
     if (!user) {
       throw new NotFoundException('Usuário não foi encontrado');
