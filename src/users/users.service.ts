@@ -74,7 +74,7 @@ export class UsersService {
     });
 
     if (!user) {
-      throw new HttpException(`Usuário não encontrado`, HttpStatus.NOT_FOUND);
+      throw new NotFoundException('Usuário não encontrado');
     }
     // Verificando se já existe um usuário com o mesmo cpf,
     // porém eliminando a validação com o seu proprio cpf
